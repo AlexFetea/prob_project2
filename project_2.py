@@ -39,14 +39,13 @@ for game in range(n):
         elif p <= 0.5:  # event that the customer is unavailable
             T += 25
             T += 1
-        else:  # event that the customer is available
-            if 0 <= X and X <= 25:
-                T += X
-                W += T
-                break
-            else:
-                T += 25
-        W += T
+		elif 0<=X and X<=25:: #event that the customer is available
+			T+=X
+			T+=1
+		else: #event that customer is available but lets phone ring
+			T+=25
+			T+=1
+		W+=T
         if calls >= 4:
             break
     W_list += [W]
