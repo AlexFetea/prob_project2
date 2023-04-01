@@ -4,15 +4,14 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
 
-n = 1000
+n = 10000
 
-prev_random = 1000
-
+random_state = 1000
 
 def get_next_random():
-    global prev_random
-    prev_random = ((24693 * prev_random + 3517) % (2 ** 17))
-    return prev_random / (2**17)
+    global random_state
+    random_state = (24693 * random_state + 3517) % (2 ** 17)
+    return random_state / (2 ** 17)
 
 def function_inverse(u):
     if u >= 0 and u <= 1:
@@ -20,35 +19,44 @@ def function_inverse(u):
     else:
         raise Exception("u is not in [0,1]")
 
-
 W_list = []
 
-for game in range(n):
-    X = function_inverse(random.uniform(0, 1))
+for customer in range(n):
     W = 0
-    calls = 0
 
-    while calls < 4:
-        calls += 1;
-        T = 6  # Turn phone on and dial
-        p = random.uniform(0, 1)
+    for call in range(4):
+        # Turn phone on and dial
+        W += 6
 
-        if p <= 0.2:  # event that the line is busy
-            T += 3
-            T += 1
-        elif p <= 0.5:  # event that the customer is unavailable
-            T += 25
-            T += 1
-		elif 0<=X and X<=25:: #event that the customer is available
-			T+=X
-			T+=1
-		else: #event that customer is available but lets phone ring
-			T+=25
-			T+=1
-		W+=T
-        if calls >= 4:
-            break
-    W_list += [W]
+        p = get_next_random()
+
+        if p <= 0.2:
+            # Event that the line is busy
+            # 3 seconds to detect a busy signal
+            W += 3
+            # 1 second to end the call
+            W += 1
+        elif 0.2 <= p <= 0.5:
+            # Event that the customer is unavailable
+            # 25 seconds to detect that the customer is unavailable
+            W += 25
+            # 1 second to end the call
+            W += 1
+        else:
+            X = function_inverse(get_next_random())
+            # Event that the customer is available
+            if 0 <= X <= 25:
+                # Customer takes X seconds to answer the call
+                W += X
+                break
+            else:
+                # Customer is available but lets phone ring
+                # After 25 seconds, the customer hasn't answered, and it
+                # takes 1 second to hang up.
+                W += 25
+                W += 1
+    
+    W_list.append(W)
 
 series = pd.Series(W_list)
 stats = series.describe()
