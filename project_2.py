@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
 
-n = 10000
+n = 1000
 
 random_state = 1000
 
